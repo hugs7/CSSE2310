@@ -1,0 +1,331 @@
+% Preamble
+% ---
+\documentclass[10pt, a4paper, leqno]{article}
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+% Packages
+% ---
+
+\usepackage{amsmath} % Advanced math typesetting
+\usepackage{amssymb}
+\usepackage[utf8]{inputenc} % Unicode support {Umlauts etc.}
+\usepackage{hyperref} % Add a link to your document
+\usepackage{graphicx}
+\usepackage{float}
+
+
+\usepackage[a4paper, margin=1em]{geometry}
+
+\usepackage{multicol}
+\setlength{\columnsep}{2em}
+\setlength{\columnseprule}{1pt} 
+
+\usepackage{titlesec}
+
+\titlespacing\section{0pt}{1pt plus 1pt minus 2pt}{0pt plus 2pt minus 2pt}
+\titlespacing\subsection{0pt}{1pt plus 1pt minus 2pt}{0pt plus 2pt minus 2pt}
+\titlespacing\subsubsection{0pt}{1pt plus 1pt minus 2pt}{0pt plus 2pt minus 2pt}
+
+\usepackage{etoolbox}
+\makeatletter
+\preto{\@verbatim}{\topsep=0pt \partopsep=0pt }
+\makeatother
+ 
+\begin{document}
+
+
+
+\begin{multicols}{2}
+
+\section {System Calls}
+
+    \subsection{Pipe}
+
+    returns: 0 success, -1 error
+
+    puts FDs of pipe in the argument array
+
+    \begin{verbatim}
+    int pipe(int pipeFD[2]);
+    \end{verbatim}
+
+    \subsection{Dup}
+
+    \begin{verbatim}
+    int newFD = dup(int oldFD);
+    int newFD = dup2(int oldFD, int newFD);
+    \end{verbatim}
+    dup2 copies oldFD onto newFD, so the fileD at newFD becomes oldFD
+
+    \subsection {Fork} 
+
+    \texttt{pid\_t fork()}
+
+    returns pid to parent, and 0 to child. 
+
+
+    \subsection{Exec}
+
+    All exec functions replace the call stack. 
+    The first element of argv must be the filename to execute. 
+
+    \begin{verbatim}
+   int execv(const char *path, char *const argv[]);
+   int execvp(const char *file, char *const argv[]);
+   int execvpe(const char *file, char *const argv[],
+   char *const envp[]);
+\end{verbatim}
+    \subsubsection {Example}
+    \begin{verbatim}
+    dup2(hubToPlayer[0], 0);
+    dup2(playerToHub[1], 1);
+    dup2(devNull, 2);
+
+    char playerIDArg[ARG_SIZE];
+    sprintf(playerIDArg, "%d", i);
+
+    execlp(playerExecutables[i], 
+        playerExecutables[i],
+        numPlayersArg, playerIDArg,
+        thresholdArg, handArg, (char*) 0);
+\end{verbatim}
+
+    \subsection {Wait}
+
+    \begin{verbatim}
+int exitStatus;
+pid_t wait(int *stat_loc);
+// possible options: WNOHANG
+int options = 0;
+//pid_t waitpid(pid_t pid, &exitStatus, int options);
+pid_t waitpid(451, &exitStatus, 0);
+int status = WEXITSTATUS(exitStatus);
+bool WIFEEXITED(exitStatus); 
+    // true if exit() was called by child
+int WEXITSTATUS(exitStatus);
+    // The value given to exit() by child
+bool WIFSIGNALED(exitStatus); 
+    //true if exit without exit() 
+int WTERMSIG(exitStatus); 
+    // the signal that killed child
+\end{verbatim}
+
+\subsection {Signals}
+
+1 HUP, 2 INT, 9 KILL, 11 SEGV, 13 PIPE
+
+\begin{verbatim}
+static void sighup_handler(int signum);
+int main() {
+    struct sigaction saHup;
+    saHup.sa_handler = sighup_handler;
+    saHup.sa_flags = SA_RESTART;
+    sigaction(SIGHUP, &saHup, NULL);
+}
+int main() {
+    sigset_t signalMask;
+    sigemptyset(&signalMask);
+    sigaddset(&signalMask, SIGPIPE);
+    pthread_sigmask(SIG_BLOCK, &signalMask, 0);
+}
+void *handler(void *) {
+    sigset_t waiton; // setup sigset
+    while (!sigwait(&waiton)) {
+        // do things when receiving signal
+    }
+}
+\end{verbatim}
+
+\subsection {PThread}
+
+\begin{verbatim}
+pthread_mutex_init(pthread_mutex_t);
+int pthread_create(&threadID, attr, 
+        void*(*func)(void*), void*arg);
+
+void pthread_exit(void *retval);
+int pthread_join(threadID, void**retval);
+
+sem_init(sem_t *sem, 0, initialVal);
+sem_post(sem_t); sem_wait(sem_t*); 
+sem_trywait(sem_t*);
+\end{verbatim}
+
+\subsection {stdio}
+
+\texttt{FILE *fdopen(int FD, char *mode)}
+
+\texttt{int sscanf(string, format, ...)}
+
+\texttt{char *fgets(char *retstr, int maxchars, FILE*)}
+
+Reads until eof or newline, terminating newline is stored. 
+
+\section {Networks}
+
+\subsection {DNS}
+Over UDP
+\subsection {UDP}
+Discrete \emph{Datagrams}, no handshake and verification. Messages have a mx size, no 
+delivery acknowledgement messages (unless you implement it on top). 
+\subsection {TCP}
+Bi-Directional Connection oriented. Provides reliability (keep sending until you get an ACK).
+
+Segments
+
+ACK and NAK Messages. 
+
+\subsection {Notation}
+
+CIDR: Set host bits to 0 \texttt{/numnetbits}. Netmask: Set all network bits to 1, all host bits to 0.
+
+\subsection {Special Addresses}
+Gateway: All host bits 0. Broadcast: All host bits 1.
+\subsubsection {Non-routable ips}
+
+\begin{itemize}
+\tightlist
+\item 10.0.0.0 / 8
+\item 192.168.0.0 / 16
+\item 127.0.0.0 / 8 Loopback
+\item 169.254.0.0 / 16 ONLY used for fallback when DHCP failed
+\end{itemize}
+
+\subsection {NAT = Network Address Translation}
+
+Rewrites source IP for TCP requests, and keeps track using incoming port-outgoing port on each side of the network. 
+
+\subsection {Layers}
+
+\begin{enumerate}
+\tightlist
+\item Physical
+    \begin{itemize}
+    \tightlist
+        \item Wires
+    \end{itemize}
+\item DataLink
+    \begin{itemize}
+    \tightlist
+        \item Ethernet
+        \item MAC Addressing (48bit)
+    \end{itemize}
+\item Network
+    \begin{itemize}
+    \tightlist
+        \item IP: Internet Protocol
+        \item IPv4/v6 Addressing (v4 32 bit)
+    \end{itemize}
+\item Transport
+    \begin{itemize}
+    \tightlist
+        \item UDP/TCP
+        \item Port numbers
+    \end{itemize}
+\item Application
+    \begin{itemize}
+    \tightlist
+        \item HTTP + HTML
+        \item GET/POST
+    \end{itemize}
+\end{enumerate}
+
+
+\section {Memory}
+
+\begin{verbatim}
+void *malloc(size_t size);
+void free(void *ptr);
+void *calloc(size_t nmemb, size_t size);
+void *realloc(void *ptr, size_t size);
+\end{verbatim}
+
+\subsection {TLB = Translation Look-aside Buffer}
+
+Hardware memory page$\to$frame cache, global.
+
+\subsection {Disk fragmentation}
+Internal: There is unused space in allocated blocks (because files are smaller than blocksize).
+External: There is no large contiguous free space; small files are created and deleted everywhere, 
+bad indexing for expanding files. 
+
+\subsection {C Types}
+
+\begin{itemize}
+    \tightlist
+\item int: $\geq$ 16bits
+\item INT modifiers: signed,unsigned,short,long 
+\item \texttt{long} alone implies int $\geq$ 32bits
+\item long long: $\geq$ 64 bit int. 
+\item float: single precision float 32bits
+\item double: double precision float 64bits
+\item long double: extended precision float 96/128bit
+\end{itemize}
+
+
+\section {Bash}
+
+Wildcards: \texttt{*} and \texttt{?}
+
+\begin{itemize}
+    \tightlist
+    \item[\texttt{uniq:}] comp consecutive lines [-d (print duplicates) –c (prefix line with count of
+occurences) –i (ignore case) –u (print unique lines) –sN (skip first N chars) –wN (only count
+first N chars)
+\item [\texttt{sort:}] [-r] reverse order [-k] key
+\item [\texttt{kill:}] -s SIGNAME
+\item \texttt{head / tail} -n number of lines
+\item [\texttt{grep:}] -v invert, regex: \texttt{\^} beginning of line, \$ end of line, . any character, * match 0 or more times, [] match any one character inside []. 
+\item [\texttt{tr:}] -s 'c', combine all ocurences of 'c' in line into one, -d 'c' delete all occurences of c
+\item [\texttt{pgrep}]: -x exact match, -c count, -u \$USER, user
+\end{itemize}
+
+\begin{verbatim} 
+cut -f$fieldNum -d$delimiterchar 
+chmod $mode $filename
+ln -s $linkname $targetname 
+
+$ ps -ef
+UID        PID  PPID   C STIME TTY          TIME CMD
+user    procID parenID                      age  name
+
+$ ls -li | tr -s ' '
+4719745 -rwxrw-r-- 1 root root 2048 Jan 13 07:11 bob 
+$ ls -d 
+.
+$ ls -1
+alice
+bob
+\end{verbatim}
+
+\begin{itemize}
+    \tightlist
+    \item inode number
+    \item  \texttt{[-/d/l]uuugggooo} File, symlink, or directory, then permissions 
+        \item Number of hardlinks
+        \item owner name
+        \item owner group
+        \item file size (bytes)
+        \item modification time and file name
+        \item symlink info
+\end{itemize}
+
+\begin{verbatim}
+ ________________
+< GNU can do it! >
+ ----------------
+  \
+   \     
+    \     (____)
+           (oo)------___
+           (__)\        \/\
+               ||----\ |
+               ||     ||
+
+\end{verbatim}
+
+\end{multicols}
+
+\end{document}
+
