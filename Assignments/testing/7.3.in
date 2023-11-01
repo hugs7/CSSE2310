@@ -1,0 +1,4 @@
+spawn touch /tmp/7.3.a
+sleep 12
+spawn touch /tmp/7.3.b
+sleep 1

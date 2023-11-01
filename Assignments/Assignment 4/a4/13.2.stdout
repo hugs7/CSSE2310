@@ -1,0 +1,9 @@
+Output from client 1 is:
+------------------------
+HTTP/1.1 404 Not Found
+Content-Length: 0
+
+HTTP/1.1 404 Not Found
+Content-Length: 0
+
+------------------------

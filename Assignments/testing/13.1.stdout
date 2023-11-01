@@ -1,0 +1,9 @@
+> New Job ID [0] created
+> New Job ID [1] created
+> > > [Job] cmd:status
+[0] cat:running
+[1] testfiles/send_signal_to_parent.sh:running
+> > > [Job] cmd:status
+[0] cat:signalled(9)
+[1] testfiles/send_signal_to_parent.sh:signalled(9)
+> 

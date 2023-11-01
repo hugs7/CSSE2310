@@ -1,0 +1,6 @@
+spawn date "+%T"
+sleep 5
+spawn date "+%T"
+sleep 0.2
+rcv 0
+rcv 1

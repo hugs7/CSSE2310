@@ -1,0 +1,6 @@
+> New Job ID [0] created
+> [Job] cmd:status
+[0] testfiles/redirect_input_to_stderr.sh:running
+> > [Job] cmd:status
+[0] testfiles/redirect_input_to_stderr.sh:running
+> 

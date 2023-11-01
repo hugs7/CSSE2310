@@ -1,0 +1,7 @@
+> New Job ID [0] created
+> [Job] cmd:status
+[0] testfiles/write_pid_to_file.sh:running
+> > [Job] cmd:status
+[0] testfiles/write_pid_to_file.sh:signalled(9)
+> New Job ID [1] created
+> > > 

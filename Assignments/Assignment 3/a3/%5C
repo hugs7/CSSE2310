@@ -1,0 +1,195 @@
+// CSSE2310 Assignment 3 a3
+// By Hugo Burton
+// Start Date: 4pm Friday 15th April, 2022
+// Due Date: 4pm Friday 13th May, 2022
+// Student Number: s4698512 (46985123)
+
+#ifndef hq_h
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include <csse2310a3.h>     // given library
+#include <fcntl.h>
+#include <unistd.h>
+
+// Defintions
+
+#define MAX_BUFFER_SIZE 52
+
+#endif      // hq_h
+
+// Function declarations
+
+void spawn(char* program, char** args);
+
+void report(void);
+
+void call_signal(int jobid, int signum);
+
+void send(int jobid, char* text);
+
+void rcv(int jobid);
+
+void eof(int jobid);
+
+void cleanup(void);
+
+// Globals
+
+int jobid = 0;
+
+// Program
+
+int main(int argc, char* argv[]) {
+    char* input = calloc(MAX_BUFFER_SIZE, sizeof(char));
+    char** tokens; 
+    fflush(stdin);
+    // Input prompt and flush
+    
+    printf("> ");
+    fflush(stdout);
+    
+    // Wait for user input
+    input = read_line(stdin);
+    // Use split_space_not_quote here to make my life easier
+    int spcs = 0;
+
+    tokens = split_space_not_quote(input, &spcs);
+    
+    // Consider first token for command
+    
+    if (!strcmp(tokens[0], "spawn")) {
+        printf("spawn");
+
+        spawn(tokens[1], tokens + 2 * sizeof(tokens[0]));
+    } else if (!strcmp(tokens[0], "report")) {
+
+        report();
+    } else if (!strcmp(tokens[0], "signal")) {
+
+        call_signal(int jobid, int signum);
+    } else if (!strcmp(tokens[0], "sleep")) {
+
+        sleep(tokens[1]);
+    } else if (!strcmp(tokens[0], "send")) {
+
+        send(int jobid, char* text);
+    } else if (!strcmp(tokens[0], "rcv")) {
+
+        rcv(int jobid);
+    } else if (!strcmp(tokens[0], "eof")) {
+
+        eof(int jobid);
+    } else if (!strcmp(tokens[0], "cleanup")) {
+        cleanup();
+    } else {
+        printf("Error: Invalid command");
+    }
+    
+    return 0;
+}
+
+
+// Commands to be read
+//
+// Spawn
+// Report
+// Signal
+// Sleep
+// Send
+// rcv
+// eof
+// cleanup
+
+
+void spawn(char* program, char** args) {
+    // Fork
+    // Setup pipes such that child stdin and stdout become directed from/to
+    // hq
+    // exec the requested program
+    // $PATH to be searched for executable programs
+
+    printf("New Job ID [%d] created.\n", jobid++);
+    
+    int down[2];    // parent write, child read
+    int up[2];      // parent read, child write
+
+    if (pipe(down) < 0) {
+        perror("Creating down pipe");
+        exit(1);
+    }
+
+    if (pipe(up) < 0) {
+        perror("Creating up pipe");
+        exit(1);
+    }
+
+    if (fork()) {
+        // parent
+        close(down[0]);
+        close(up[1]);
+        
+        // Do stuff
+        
+
+
+        // Close pipes
+        
+        close(down[1]);
+        close(up[0]);
+
+        // Wait on child
+        
+        wait(NULL);
+        
+        exit(0);
+    } else {
+        // child
+        close(down[1]);
+        close(up[0]);
+        
+        dup2(down[0], STDIN_FILENO);
+        dup2(STDOUT_FILENO, up[1]);
+        
+        execvp(program, args);
+        
+        close(down[0]);
+        close(up[1]);
+        
+        exit(0);
+    }
+
+    // if exec() fails, child process exists with status 99
+}
+
+void report(void) {
+    // Outputs information on all jobs so far
+    //
+}
+
+void call_signal(int jobid, int signum) {
+
+}
+
+void send(int jobid, char* text) {
+
+}
+
+void rcv(int jobid) {
+    
+    // get job
+    
+
+    // print 1 line
+    
+    printf("hi\n");
+
+}
+
+void eof(int jobid) {
+
+}
+
+void cleanup(void) {
+
+}

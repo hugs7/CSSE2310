@@ -1,0 +1,16 @@
+> New Job ID [0] created
+> [Job] cmd:status
+Error: Invalid job
+> [Job] cmd:status
+Error: Invalid job
+> New Job ID [1] created
+> [Job] cmd:status
+Error: Invalid job
+> [Job] cmd:status
+Error: Invalid job
+> [Job] cmd:status
+[1] false:exited(1)
+> [Job] cmd:status
+[0] true:exited(0)
+[1] false:exited(1)
+> 

@@ -1,0 +1,10 @@
+total 86
+-rw-------+ 1 s4698512 students   424 May 14 09:43 fd2.c
+-rw-------+ 1 s4698512 students   354 May 14 09:43 fd.c
+-rw-------+ 1 s4698512 students   559 May 14 09:43 fdc.c
+-rwx------+ 1 s4698512 students     0 May 15 11:12 listing
+-rw-------+ 1 s4698512 students  1080 May 14 09:43 pipedemo.c
+-rwx------+ 1 s4698512 students 17688 May 15 11:12 redir
+-rw-------+ 1 s4698512 students   730 May 14 09:43 redir2.c
+-rw-------+ 1 s4698512 students   291 May 14 09:43 redir.c
+-rw-------+ 1 s4698512 students   547 May 14 09:43 write.c

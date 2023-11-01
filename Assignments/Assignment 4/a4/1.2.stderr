@@ -1,0 +1,2 @@
+testfiles/stringstore_mem_check.sh: line 32: 411053 Segmentation fault      valgrind --log-file=/tmp/valgrind.$$.out /tmp/a.$$.out
+Memory leak found

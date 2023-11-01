@@ -1,0 +1,7 @@
+Got response from dbserver:
+HTTP/1.1 400 Bad Request
+Content-Length: 0
+
+HTTP/1.1 200 OK
+Content-Length: 0
+

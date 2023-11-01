@@ -1,0 +1,6 @@
+Output from client 1 is:
+------------------------
+HTTP/1.1 401 Unauthorized
+Content-Length: 0
+
+------------------------
